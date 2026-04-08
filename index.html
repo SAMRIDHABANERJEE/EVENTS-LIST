@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Greenovation Club — Event Predictor</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-50: #EAF3DE;
+    --green-100: #C0DD97;
+    --green-200: #97C459;
+    --green-600: #3B6D11;
+    --green-800: #27500A;
+    --blue-50: #E6F1FB;
+    --blue-600: #185FA5;
+    --blue-800: #0C447C;
+    --amber-50: #FAEEDA;
+    --amber-600: #854F0B;
+    --amber-800: #633806;
+    --gray-50: #F1EFE8;
+    --gray-100: #D3D1C7;
+    --gray-600: #5F5E5A;
+    --gray-800: #444441;
+    --bg: #ffffff;
+    --bg-secondary: #F5F5F2;
+    --text-primary: #1a1a18;
+    --text-secondary: #5F5E5A;
+    --text-tertiary: #888780;
+    --border: rgba(0,0,0,0.12);
+    --border-med: rgba(0,0,0,0.22);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --green-50: #27500A;
+      --green-100: #3B6D11;
+      --green-600: #97C459;
+      --green-800: #C0DD97;
+      --blue-50: #0C447C;
+      --blue-600: #85B7EB;
+      --blue-800: #B5D4F4;
+      --amber-50: #633806;
+      --amber-600: #EF9F27;
+      --amber-800: #FAC775;
+      --bg: #1a1a18;
+      --bg-secondary: #232320;
+      --text-primary: #F1EFE8;
+      --text-secondary: #B4B2A9;
+      --text-tertiary: #888780;
+      --border: rgba(255,255,255,0.10);
+      --border-med: rgba(255,255,255,0.20);
+    }
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  #app {
+    max-width: 720px;
+    margin: 0 auto;
+    background: var(--bg);
+    border-radius: 16px;
+    border: 0.5px solid var(--border);
+    padding: 2rem;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 1.75rem;
+  }
+
+  .logo {
+    width: 48px; height: 48px;
+    background: var(--green-50);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .logo svg { width: 26px; height: 26px; }
+
+  .header-text h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--green-600);
+    line-height: 1.2;
+  }
+
+  .header-text p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 3px;
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+  }
+
+  @media (max-width: 480px) {
+    .controls { grid-template-columns: 1fr; }
+  }
+
+  .ctrl-group label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .ctrl-group select {
+    width: 100%;
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    background: var(--bg);
+    border: 0.5px solid var(--border-med);
+    border-radius: 8px;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+
+  .legacy-section {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .legacy-section h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+
+  .legacy-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+    min-height: 24px;
+  }
+
+  .tag {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--green-50);
+    color: var(--green-800);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .tag .remove {
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    opacity: 0.6;
+  }
+  .tag .remove:hover { opacity: 1; }
+
+  .add-legacy {
+    display: flex;
+    gap: 8px;
+  }
+
+  .add-legacy input {
+    flex: 1;
+    padding: 8px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    background: var(--bg);
+    border: 0.5px solid var(--border-med);
+    border-radius: 8px;
+    color: var(--text-primary);
+  }
+
+  .add-legacy input:focus { outline: none; border-color: var(--green-600); }
+
+  .add-legacy button {
+    padding: 8px 14px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--green-50);
+    color: var(--green-800);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .add-legacy button:hover { opacity: 0.8; }
+
+  .generate-btn {
+    width: 100%;
+    padding: 13px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    background: var(--green-50);
+    color: var(--green-800);
+    border: 1.5px solid var(--green-100);
+    border-radius: 12px;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: opacity 0.2s;
+    margin-bottom: 1.5rem;
+  }
+
+  .generate-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .generate-btn:hover:not(:disabled) { opacity: 0.85; }
+
+  .results-area { display: none; }
+  .results-area.visible { display: block; }
+
+  .upcoming-strip { margin-bottom: 1.25rem; }
+
+  .upcoming-strip h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 10px;
+  }
+
+  .events-strip {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .event-chip {
+    font-size: 12px;
+    padding: 5px 11px;
+    border-radius: 20px;
+    background: var(--blue-50);
+    color: var(--blue-800);
+    font-weight: 500;
+    border: 0.5px solid rgba(24,95,165,0.2);
+  }
+
+  .ideas-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .idea-card {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--green-200);
+  }
+
+  .idea-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .idea-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .idea-badge {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+
+  .badge-green { background: var(--green-50); color: var(--green-800); }
+  .badge-blue  { background: var(--blue-50);  color: var(--blue-800); }
+  .badge-amber { background: var(--amber-50); color: var(--amber-800); }
+
+  .idea-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .idea-meta {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .idea-meta span { font-weight: 500; color: var(--green-600); }
+
+  .loading-pulse {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-style: italic;
+  }
+
+  .dot-spin {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--green-600);
+    animation: pulse 1.2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  .error-msg {
+    color: #A32D2D;
+    font-size: 14px;
+    padding: 1rem;
+    background: #FCEBEB;
+    border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" fill="var(--green-600)" opacity="0.12"/>
+        <path d="M7 17c.5-3 2.5-5 5-5-2 0-4-2-4-5 0 0 2 2 5 2s5-2 5-2c0 3-2 5-4 5 2.5 0 4.5 2 5 5" stroke="var(--green-600)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="header-text">
+      <h1>Greenovation Club — Event Predictor</h1>
+      <p>AI-powered event planning from your calendar</p>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-group">
+      <label>Select month</label>
+      <select id="monthSelect"></select>
+    </div>
+    <div class="ctrl-group">
+      <label>Club focus area</label>
+      <select id="focusSelect">
+        <option value="general">General / All themes</option>
+        <option value="environment">Environment &amp; Nature</option>
+        <option value="health">Health &amp; Wellness</option>
+        <option value="social">Social Impact &amp; Awareness</option>
+        <option value="education">Education &amp; Science</option>
+        <option value="culture">Culture &amp; Community</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="legacy-section">
+    <h3>Legacy events (past Greenovation initiatives)</h3>
+    <div class="legacy-tags" id="legacyTags"></div>
+    <div class="add-legacy">
+      <input id="legacyInput" type="text" placeholder="Add a past event, e.g. 'Tree plantation drive'..." />
+      <button onclick="addLegacy()">+ Add</button>
+    </div>
+  </div>
+
+  <button class="generate-btn" id="genBtn" onclick="generateIdeas()">
+    Generate event ideas
+  </button>
+
+  <div class="results-area" id="resultsArea">
+    <div class="upcoming-strip">
+      <h3>Calendar events this month</h3>
+      <div class="events-strip" id="eventsStrip"></div>
+    </div>
+    <div class="ideas-grid" id="ideasGrid"></div>
+  </div>
+</div>
+
+<script>
+const EVENTS = [
+  {name:"Happy New Year",month:1,day:1},
+  {name:"Swami Vivekananda Jayanti",month:1,day:12},
+  {name:"Indian Army Day",month:1,day:15},
+  {name:"National Hugging Day",month:1,day:21},
+  {name:"National Girl Child Day",month:1,day:24},
+  {name:"International Day of Education",month:1,day:24},
+  {name:"National Tourism Day",month:1,day:25},
+  {name:"Republic Day",month:1,day:26},
+  {name:"World Wetlands Day",month:2,day:2},
+  {name:"World Cancer Day",month:2,day:4},
+  {name:"World Radio Day",month:2,day:13},
+  {name:"Valentine's Day",month:2,day:14},
+  {name:"World Day of Social Justice",month:2,day:20},
+  {name:"International Mother Language Day",month:2,day:21},
+  {name:"International Polar Bear Day",month:2,day:27},
+  {name:"World NGO Day",month:2,day:27},
+  {name:"National Science Day",month:2,day:28},
+  {name:"International Women's Day",month:3,day:8},
+  {name:"World Sleep Day",month:3,day:13},
+  {name:"Pi Day / Einstein's Birthday",month:3,day:14},
+  {name:"International Day of Happiness",month:3,day:20},
+  {name:"International Day of Forests",month:3,day:21},
+  {name:"World Water Day",month:3,day:22},
+  {name:"Martyr's Day",month:3,day:23},
+  {name:"April Fools Day",month:4,day:1},
+  {name:"International Children's Book Day",month:4,day:2},
+  {name:"World Health Day",month:4,day:7},
+  {name:"World Siblings Day",month:4,day:10},
+  {name:"Earth Day",month:4,day:22},
+  {name:"World Book Day",month:4,day:23},
+  {name:"English Language Day",month:4,day:23},
+  {name:"International Dance Day",month:4,day:29},
+  {name:"May Day / Labour Day",month:5,day:1},
+  {name:"World Red Cross Day",month:5,day:8},
+  {name:"National Technology Day",month:5,day:11},
+  {name:"International Day of Families",month:5,day:15},
+  {name:"World Football Day",month:5,day:25},
+  {name:"World No Tobacco Day",month:5,day:31},
+  {name:"World Environment Day",month:6,day:5},
+  {name:"World Oceans Day",month:6,day:8},
+  {name:"World Day Against Child Labour",month:6,day:12},
+  {name:"World Blood Donor Day",month:6,day:14},
+  {name:"World Refugee Day",month:6,day:20},
+  {name:"International Yoga Day",month:6,day:21},
+  {name:"National Doctors' Day",month:7,day:1},
+  {name:"World Chocolate Day",month:7,day:7},
+  {name:"World Population Day",month:7,day:11},
+  {name:"World Hepatitis Day",month:7,day:28},
+  {name:"International Tiger Day",month:7,day:29},
+  {name:"International Youth Day",month:8,day:12},
+  {name:"World Organ Donation Day",month:8,day:13},
+  {name:"Independence Day (India)",month:8,day:15},
+  {name:"National Sports Day",month:8,day:29},
+  {name:"Teachers' Day",month:9,day:5},
+  {name:"Patriot Day",month:9,day:11},
+  {name:"International Day of Peace",month:9,day:21},
+  {name:"World Tourism Day",month:9,day:27},
+  {name:"World Heart Day",month:9,day:29},
+  {name:"World Vegetarian Day",month:10,day:1},
+  {name:"Mahatma Gandhi Jayanti",month:10,day:2},
+  {name:"World Animal Day",month:10,day:4},
+  {name:"World Teachers' Day",month:10,day:5},
+  {name:"World Mental Health Day",month:10,day:10},
+  {name:"Global Handwashing Day",month:10,day:15},
+  {name:"World Food Day",month:10,day:16},
+  {name:"International Day for Poverty Eradication",month:10,day:17},
+  {name:"World Polio Day",month:10,day:24},
+  {name:"Halloween",month:10,day:31},
+  {name:"World Kindness Day",month:11,day:13},
+  {name:"Children's Day (India)",month:11,day:14},
+  {name:"International Day for Tolerance",month:11,day:16},
+  {name:"International Men's Day",month:11,day:19},
+  {name:"Universal Children's Day",month:11,day:20},
+  {name:"World Television Day",month:11,day:21},
+  {name:"Constitution Day (India)",month:11,day:26},
+  {name:"World AIDS Day",month:12,day:1},
+  {name:"Wildlife Conservation Day",month:12,day:4},
+  {name:"World Soil Day",month:12,day:5},
+  {name:"International Anti-Corruption Day",month:12,day:9},
+  {name:"Human Rights Day",month:12,day:10},
+  {name:"National Mathematics Day",month:12,day:22},
+  {name:"Christmas",month:12,day:25},
+  {name:"New Year's Eve",month:12,day:31}
+];
+
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+let legacyEvents = ["Green Campus Drive 2023","Eco-Art Exhibition","Seed Ball Workshop","Solar Energy Fair","Zero Waste Challenge"];
+
+function init() {
+  const sel = document.getElementById('monthSelect');
+  const curMonth = new Date().getMonth();
+  MONTHS.forEach((m, i) => {
+    const opt = document.createElement('option');
+    opt.value = i + 1;
+    opt.textContent = m;
+    if (i === curMonth) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  renderLegacy();
+}
+
+function renderLegacy() {
+  const c = document.getElementById('legacyTags');
+  c.innerHTML = legacyEvents.map((e, i) =>
+    `<div class="tag">${e}<span class="remove" onclick="removeLegacy(${i})">×</span></div>`
+  ).join('');
+}
+
+function addLegacy() {
+  const inp = document.getElementById('legacyInput');
+  if (inp.value.trim()) {
+    legacyEvents.push(inp.value.trim());
+    inp.value = '';
+    renderLegacy();
+  }
+}
+
+function removeLegacy(i) {
+  legacyEvents.splice(i, 1);
+  renderLegacy();
+}
+
+function getMonthEvents(month) {
+  return EVENTS.filter(e => e.month === parseInt(month));
+}
+
+function showUpcoming(month) {
+  const events = getMonthEvents(month);
+  const strip = document.getElementById('eventsStrip');
+  strip.innerHTML = events.map(e =>
+    `<div class="event-chip">${e.day} — ${e.name}</div>`
+  ).join('');
+}
+
+async function generateIdeas() {
+  const month = document.getElementById('monthSelect').value;
+  const focus = document.getElementById('focusSelect').value;
+  const monthName = MONTHS[month - 1];
+  const monthEvents = getMonthEvents(month);
+
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  btn.textContent = 'Growing ideas...';
+
+  const resultsArea = document.getElementById('resultsArea');
+  resultsArea.classList.add('visible');
+  showUpcoming(month);
+
+  const ideasGrid = document.getElementById('ideasGrid');
+  ideasGrid.innerHTML = `<div class="loading-pulse"><div class="dot-spin"></div> Claude is generating tailored event ideas...</div>`;
+
+  const eventsList = monthEvents.map(e => `- ${e.name} (${monthName} ${e.day})`).join('\n');
+  const legacyList = legacyEvents.length ? legacyEvents.join(', ') : 'None provided';
+
+  const prompt = `You are an event planner for the Greenovation Club — a school/college club focused on innovation, sustainability, and environmental action.
+
+The club wants fresh, creative event ideas for ${monthName}.
+
+Calendar events happening in ${monthName}:
+${eventsList}
+
+Club focus area: ${focus === 'general' ? 'General (all themes welcome)' : focus}
+
+Past legacy events the club has run:
+${legacyList}
+
+Generate exactly 4 unique, creative Greenovation Club event ideas for ${monthName}. Each should be inspired by one or more of the calendar events above, feel fresh compared to the legacy events, and be actionable for a student club.
+
+Respond ONLY with a valid JSON array with no markdown, no preamble. Each object must have:
+- "title": string (creative event name)
+- "inspired_by": string (which calendar event(s) it connects to)
+- "description": string (2-3 sentences explaining the event concept)
+- "format": string (e.g. "Workshop", "Exhibition", "Awareness Drive", "Competition", "Campaign")
+- "impact": string ("Environmental", "Social", or "Educational")
+
+Return only the JSON array.`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const raw = data.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+    const ideas = JSON.parse(raw);
+    renderIdeas(ideas);
+  } catch (e) {
+    ideasGrid.innerHTML = `<div class="error-msg">Could not generate ideas. Please try again.</div>`;
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Generate event ideas';
+}
+
+function badgeClass(impact) {
+  if (impact === 'Environmental') return 'badge-green';
+  if (impact === 'Social') return 'badge-amber';
+  return 'badge-blue';
+}
+
+function renderIdeas(ideas) {
+  const grid = document.getElementById('ideasGrid');
+  grid.innerHTML = ideas.map(idea => `
+    <div class="idea-card">
+      <div class="idea-header">
+        <div class="idea-title">${idea.title}</div>
+        <div class="idea-badge ${badgeClass(idea.impact)}">${idea.impact}</div>
+      </div>
+      <div class="idea-desc">${idea.description}</div>
+      <div class="idea-meta">
+        Format: <span>${idea.format}</span>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        Inspired by: <span>${idea.inspired_by}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('legacyInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addLegacy();
+});
+
+init();
+</script>
+</body>
+</html>
