@@ -1,646 +1,518 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Greenovation Club — Event Predictor</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samridha's Event Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --green-50: #EAF3DE;
-    --green-100: #C0DD97;
-    --green-200: #97C459;
-    --green-600: #3B6D11;
-    --green-800: #27500A;
-    --blue-50: #E6F1FB;
-    --blue-600: #185FA5;
-    --blue-800: #0C447C;
-    --amber-50: #FAEEDA;
-    --amber-600: #854F0B;
-    --amber-800: #633806;
-    --gray-50: #F1EFE8;
-    --gray-100: #D3D1C7;
-    --gray-600: #5F5E5A;
-    --gray-800: #444441;
-    --bg: #ffffff;
-    --bg-secondary: #F5F5F2;
-    --text-primary: #1a1a18;
-    --text-secondary: #5F5E5A;
-    --text-tertiary: #888780;
-    --border: rgba(0,0,0,0.12);
-    --border-med: rgba(0,0,0,0.22);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --green-50: #27500A;
-      --green-100: #3B6D11;
-      --green-600: #97C459;
-      --green-800: #C0DD97;
-      --blue-50: #0C447C;
-      --blue-600: #85B7EB;
-      --blue-800: #B5D4F4;
-      --amber-50: #633806;
-      --amber-600: #EF9F27;
-      --amber-800: #FAC775;
-      --bg: #1a1a18;
-      --bg-secondary: #232320;
-      --text-primary: #F1EFE8;
-      --text-secondary: #B4B2A9;
-      --text-tertiary: #888780;
-      --border: rgba(255,255,255,0.10);
-      --border-med: rgba(255,255,255,0.20);
-    }
-  }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
-
-  #app {
-    max-width: 720px;
-    margin: 0 auto;
-    background: var(--bg);
-    border-radius: 16px;
-    border: 0.5px solid var(--border);
-    padding: 2rem;
-  }
-
-  .header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 1.75rem;
-  }
-
-  .logo {
-    width: 48px; height: 48px;
-    background: var(--green-50);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .logo svg { width: 26px; height: 26px; }
-
-  .header-text h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--green-600);
-    line-height: 1.2;
-  }
-
-  .header-text p {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-top: 3px;
-  }
-
-  .controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 1.25rem;
-  }
-
-  @media (max-width: 480px) {
-    .controls { grid-template-columns: 1fr; }
-  }
-
-  .ctrl-group label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    display: block;
-    margin-bottom: 6px;
-  }
-
-  .ctrl-group select {
-    width: 100%;
-    padding: 9px 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    background: var(--bg);
-    border: 0.5px solid var(--border-med);
-    border-radius: 8px;
-    color: var(--text-primary);
-    cursor: pointer;
-  }
-
-  .legacy-section {
-    background: var(--bg-secondary);
-    border: 0.5px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .legacy-section h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin-bottom: 10px;
-  }
-
-  .legacy-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 10px;
-    min-height: 24px;
-  }
-
-  .tag {
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    background: var(--green-50);
-    color: var(--green-800);
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .tag .remove {
-    cursor: pointer;
-    font-size: 15px;
-    line-height: 1;
-    opacity: 0.6;
-  }
-  .tag .remove:hover { opacity: 1; }
-
-  .add-legacy {
-    display: flex;
-    gap: 8px;
-  }
-
-  .add-legacy input {
-    flex: 1;
-    padding: 8px 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    background: var(--bg);
-    border: 0.5px solid var(--border-med);
-    border-radius: 8px;
-    color: var(--text-primary);
-  }
-
-  .add-legacy input:focus { outline: none; border-color: var(--green-600); }
-
-  .add-legacy button {
-    padding: 8px 14px;
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
-    background: var(--green-50);
-    color: var(--green-800);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-  }
-
-  .add-legacy button:hover { opacity: 0.8; }
-
-  .generate-btn {
-    width: 100%;
-    padding: 13px;
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    background: var(--green-50);
-    color: var(--green-800);
-    border: 1.5px solid var(--green-100);
-    border-radius: 12px;
-    cursor: pointer;
-    letter-spacing: 0.02em;
-    transition: opacity 0.2s;
-    margin-bottom: 1.5rem;
-  }
-
-  .generate-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-  .generate-btn:hover:not(:disabled) { opacity: 0.85; }
-
-  .results-area { display: none; }
-  .results-area.visible { display: block; }
-
-  .upcoming-strip { margin-bottom: 1.25rem; }
-
-  .upcoming-strip h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    margin-bottom: 10px;
-  }
-
-  .events-strip {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .event-chip {
-    font-size: 12px;
-    padding: 5px 11px;
-    border-radius: 20px;
-    background: var(--blue-50);
-    color: var(--blue-800);
-    font-weight: 500;
-    border: 0.5px solid rgba(24,95,165,0.2);
-  }
-
-  .ideas-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  .idea-card {
-    background: var(--bg);
-    border: 0.5px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    border-left: 3px solid var(--green-200);
-  }
-
-  .idea-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 6px;
-  }
-
-  .idea-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text-primary);
-    line-height: 1.3;
-  }
-
-  .idea-badge {
-    font-size: 11px;
-    padding: 3px 9px;
-    border-radius: 20px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    font-weight: 500;
-  }
-
-  .badge-green { background: var(--green-50); color: var(--green-800); }
-  .badge-blue  { background: var(--blue-50);  color: var(--blue-800); }
-  .badge-amber { background: var(--amber-50); color: var(--amber-800); }
-
-  .idea-desc {
-    font-size: 13px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin-bottom: 8px;
-  }
-
-  .idea-meta {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .idea-meta span { font-weight: 500; color: var(--green-600); }
-
-  .loading-pulse {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 1.5rem;
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-style: italic;
-  }
-
-  .dot-spin {
-    display: inline-block;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--green-600);
-    animation: pulse 1.2s ease-in-out infinite;
-    flex-shrink: 0;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 0.3; transform: scale(0.8); }
-    50% { opacity: 1; transform: scale(1.1); }
-  }
-
-  .error-msg {
-    color: #A32D2D;
-    font-size: 14px;
-    padding: 1rem;
-    background: #FCEBEB;
-    border-radius: 8px;
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pink:#e0437a;--teal:#3ecfb2;
+  --hero1:#2d1b4e;--hero2:#6b2060;--hero3:#1a3a4a;
+  --cardbg:#fdf6e3;--bodybg:#fdf0f5;
+  --tagbg:#fce4ec;--tagc:#c2185b;
+  --datebg:#e0f7f4;--datec:#00796b;
+  --pillabg:#e0437a;--pillac:#fff;
+  --pillbg:#f3e5f5;--pillc:#6a1b9a;
+  --filbg:#fce4ec;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bodybg);min-height:100vh}
+.hero{background:linear-gradient(135deg,var(--hero1),var(--hero2) 50%,var(--hero3));min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 24px 56px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 60% 40%,rgba(62,207,178,.13),transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(224,67,122,.12),transparent 55%);pointer-events:none}
+.badge{display:inline-block;border:2px solid rgba(255,255,255,.45);color:#fff;font-family:'Montserrat',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.18em;padding:8px 22px;border-radius:50px;margin-bottom:32px;background:rgba(255,255,255,.07)}
+.hero h1{font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(2rem,6vw,4rem);color:#fff;letter-spacing:.03em;line-height:1.1;margin-bottom:20px;text-shadow:0 2px 24px rgba(0,0,0,.25)}
+.hero p{color:rgba(255,255,255,.82);font-size:clamp(.95rem,2vw,1.15rem);max-width:560px;line-height:1.65}
+.filsec{background:var(--filbg);padding:28px 0 0}
+.filinner{max-width:1160px;margin:0 auto;padding:0 24px}
+.sbar{background:#fff9f0;border:1.5px solid #f8bbd0;border-radius:50px;display:flex;align-items:center;padding:10px 20px;gap:10px;margin-bottom:20px}
+.sbar input{border:none;background:transparent;outline:none;font-family:'Nunito',sans-serif;font-size:1rem;color:#555;width:100%}
+.sbar input::placeholder{color:#bbb}
+.pillrow{display:flex;align-items:center;gap:8px;padding-bottom:18px}
+.pills{display:flex;gap:10px;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;flex:1}
+.pills::-webkit-scrollbar{display:none}
+.pill{flex-shrink:0;padding:10px 20px;border-radius:50px;border:none;font-family:'Montserrat',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.06em;cursor:pointer;transition:all .18s;background:var(--pillbg);color:var(--pillc)}
+.pill:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.1)}
+.pill.active{background:var(--pillabg);color:var(--pillac);box-shadow:0 4px 14px rgba(224,67,122,.35)}
+.sbtn{width:28px;height:28px;border-radius:50%;border:1.5px solid #e0b0c8;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.9rem;color:#c2185b;transition:background .15s}
+.sbtn:hover{background:#fce4ec}
+.csec{max-width:1160px;margin:0 auto;padding:32px 24px 60px}
+.rcount{font-size:.9rem;color:#999;margin-bottom:20px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
+.card{background:var(--cardbg);border-radius:16px;border-left:5px solid var(--teal);padding:22px 20px 18px;box-shadow:0 2px 12px rgba(0,0,0,.05);transition:transform .18s,box-shadow .18s;animation:fi .3s ease both;cursor:pointer}
+.card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(0,0,0,.13)}
+@keyframes fi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.mtag{display:inline-block;background:var(--tagbg);color:var(--tagc);font-family:'Montserrat',sans-serif;font-weight:700;font-size:.65rem;letter-spacing:.1em;padding:4px 12px;border-radius:50px;margin-bottom:12px}
+.ctitle{font-family:'Montserrat',sans-serif;font-weight:800;font-size:1rem;color:#2d1b4e;line-height:1.35;margin-bottom:16px}
+.cdate{display:flex;align-items:center;gap:10px;background:var(--datebg);border-radius:10px;padding:10px 14px;color:var(--datec);font-family:'Montserrat',sans-serif;font-weight:700;font-size:.85rem}
+.cfooter{margin-top:14px}
+.vdbtn{background:none;border:1.5px solid #e0437a;color:#e0437a;font-family:'Montserrat',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.08em;padding:5px 14px;border-radius:50px;cursor:pointer;transition:all .15s}
+.vdbtn:hover{background:#e0437a;color:#fff}
+.nores{grid-column:1/-1;text-align:center;padding:60px 20px;color:#aaa;font-size:1.1rem}
+.overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(30,10,50,.6);align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex}
+.modal{background:#fffdf8;border-radius:22px;max-width:560px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.22);overflow:hidden;animation:mi .25s cubic-bezier(.34,1.56,.64,1) both;max-height:90vh;display:flex;flex-direction:column}
+@keyframes mi{from{opacity:0;transform:scale(.88) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.mhead{background:linear-gradient(135deg,#2d1b4e,#6b2060 60%,#1a3a4a);padding:28px 28px 24px;position:relative;flex-shrink:0}
+.mclose{position:absolute;top:16px;right:18px;background:rgba(255,255,255,.18);border:none;color:#fff;font-size:1.2rem;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.mclose:hover{background:rgba(255,255,255,.35)}
+.mmtag{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-family:'Montserrat',sans-serif;font-weight:700;font-size:.65rem;letter-spacing:.12em;padding:4px 13px;border-radius:50px;margin-bottom:12px}
+.mtitle{font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.35rem;color:#fff;line-height:1.2;margin-bottom:14px}
+.mdaterow{display:inline-flex;align-items:center;gap:8px;background:rgba(62,207,178,.2);border-radius:8px;padding:7px 14px;color:#a8f0e0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:.85rem}
+.mbody{padding:26px 28px 30px;overflow-y:auto}
+.mlabel{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.12em;color:#e0437a;margin-bottom:10px;text-transform:uppercase}
+.mdesc{font-family:'Nunito',sans-serif;font-size:1rem;color:#3d2b4e;line-height:1.75}
+.msig{background:#f0faf8;border-left:4px solid #3ecfb2;border-radius:0 10px 10px 0;padding:14px 18px;margin-top:20px}
+.msiglabel{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.1em;color:#00796b;margin-bottom:6px;text-transform:uppercase}
+.msigtext{font-size:.92rem;color:#2d5a52;line-height:1.65}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.hero{min-height:260px}.modal{border-radius:16px}.mtitle{font-size:1.1rem}}
 </style>
 </head>
 <body>
-<div id="app">
-  <div class="header">
-    <div class="logo">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10" fill="var(--green-600)" opacity="0.12"/>
-        <path d="M7 17c.5-3 2.5-5 5-5-2 0-4-2-4-5 0 0 2 2 5 2s5-2 5-2c0 3-2 5-4 5 2.5 0 4.5 2 5 5" stroke="var(--green-600)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+<section class="hero">
+  <div class="badge">DISCOVER &amp; CELEBRATE</div>
+  <h1>SAMRIDHA&#39;S EVENT PLANNER</h1>
+  <p>Your ultimate guide to special days, holidays, and celebrations throughout the year. Never miss an important moment.</p>
+</section>
+<div class="filsec">
+  <div class="filinner">
+    <div class="sbar">
+      <svg width="18" height="18" fill="none" stroke="#bbb" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="si" placeholder="Search events or dates..."/>
     </div>
-    <div class="header-text">
-      <h1>Greenovation Club — Event Predictor</h1>
-      <p>AI-powered event planning from your calendar</p>
+    <div class="pillrow">
+      <button class="sbtn" id="sl">&#8249;</button>
+      <div class="pills" id="ps">
+        <button class="pill active" data-m="ALL">ALL</button>
+        <button class="pill" data-m="JANUARY">JANUARY</button>
+        <button class="pill" data-m="FEBRUARY">FEBRUARY</button>
+        <button class="pill" data-m="MARCH">MARCH</button>
+        <button class="pill" data-m="APRIL">APRIL</button>
+        <button class="pill" data-m="MAY">MAY</button>
+        <button class="pill" data-m="JUNE">JUNE</button>
+        <button class="pill" data-m="JULY">JULY</button>
+        <button class="pill" data-m="AUGUST">AUGUST</button>
+        <button class="pill" data-m="SEPTEMBER">SEPTEMBER</button>
+        <button class="pill" data-m="OCTOBER">OCTOBER</button>
+        <button class="pill" data-m="NOVEMBER">NOVEMBER</button>
+        <button class="pill" data-m="DECEMBER">DECEMBER</button>
+      </div>
+      <button class="sbtn" id="sr">&#8250;</button>
     </div>
-  </div>
-
-  <div class="controls">
-    <div class="ctrl-group">
-      <label>Select month</label>
-      <select id="monthSelect"></select>
-    </div>
-    <div class="ctrl-group">
-      <label>Club focus area</label>
-      <select id="focusSelect">
-        <option value="general">General / All themes</option>
-        <option value="environment">Environment &amp; Nature</option>
-        <option value="health">Health &amp; Wellness</option>
-        <option value="social">Social Impact &amp; Awareness</option>
-        <option value="education">Education &amp; Science</option>
-        <option value="culture">Culture &amp; Community</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="legacy-section">
-    <h3>Legacy events (past Greenovation initiatives)</h3>
-    <div class="legacy-tags" id="legacyTags"></div>
-    <div class="add-legacy">
-      <input id="legacyInput" type="text" placeholder="Add a past event, e.g. 'Tree plantation drive'..." />
-      <button onclick="addLegacy()">+ Add</button>
-    </div>
-  </div>
-
-  <button class="generate-btn" id="genBtn" onclick="generateIdeas()">
-    Generate event ideas
-  </button>
-
-  <div class="results-area" id="resultsArea">
-    <div class="upcoming-strip">
-      <h3>Calendar events this month</h3>
-      <div class="events-strip" id="eventsStrip"></div>
-    </div>
-    <div class="ideas-grid" id="ideasGrid"></div>
   </div>
 </div>
-
-<script>
-const EVENTS = [
-  {name:"Happy New Year",month:1,day:1},
-  {name:"Swami Vivekananda Jayanti",month:1,day:12},
-  {name:"Indian Army Day",month:1,day:15},
-  {name:"National Hugging Day",month:1,day:21},
-  {name:"National Girl Child Day",month:1,day:24},
-  {name:"International Day of Education",month:1,day:24},
-  {name:"National Tourism Day",month:1,day:25},
-  {name:"Republic Day",month:1,day:26},
-  {name:"World Wetlands Day",month:2,day:2},
-  {name:"World Cancer Day",month:2,day:4},
-  {name:"World Radio Day",month:2,day:13},
-  {name:"Valentine's Day",month:2,day:14},
-  {name:"World Day of Social Justice",month:2,day:20},
-  {name:"International Mother Language Day",month:2,day:21},
-  {name:"International Polar Bear Day",month:2,day:27},
-  {name:"World NGO Day",month:2,day:27},
-  {name:"National Science Day",month:2,day:28},
-  {name:"International Women's Day",month:3,day:8},
-  {name:"World Sleep Day",month:3,day:13},
-  {name:"Pi Day / Einstein's Birthday",month:3,day:14},
-  {name:"International Day of Happiness",month:3,day:20},
-  {name:"International Day of Forests",month:3,day:21},
-  {name:"World Water Day",month:3,day:22},
-  {name:"Martyr's Day",month:3,day:23},
-  {name:"April Fools Day",month:4,day:1},
-  {name:"International Children's Book Day",month:4,day:2},
-  {name:"World Health Day",month:4,day:7},
-  {name:"World Siblings Day",month:4,day:10},
-  {name:"Earth Day",month:4,day:22},
-  {name:"World Book Day",month:4,day:23},
-  {name:"English Language Day",month:4,day:23},
-  {name:"International Dance Day",month:4,day:29},
-  {name:"May Day / Labour Day",month:5,day:1},
-  {name:"World Red Cross Day",month:5,day:8},
-  {name:"National Technology Day",month:5,day:11},
-  {name:"International Day of Families",month:5,day:15},
-  {name:"World Football Day",month:5,day:25},
-  {name:"World No Tobacco Day",month:5,day:31},
-  {name:"World Environment Day",month:6,day:5},
-  {name:"World Oceans Day",month:6,day:8},
-  {name:"World Day Against Child Labour",month:6,day:12},
-  {name:"World Blood Donor Day",month:6,day:14},
-  {name:"World Refugee Day",month:6,day:20},
-  {name:"International Yoga Day",month:6,day:21},
-  {name:"National Doctors' Day",month:7,day:1},
-  {name:"World Chocolate Day",month:7,day:7},
-  {name:"World Population Day",month:7,day:11},
-  {name:"World Hepatitis Day",month:7,day:28},
-  {name:"International Tiger Day",month:7,day:29},
-  {name:"International Youth Day",month:8,day:12},
-  {name:"World Organ Donation Day",month:8,day:13},
-  {name:"Independence Day (India)",month:8,day:15},
-  {name:"National Sports Day",month:8,day:29},
-  {name:"Teachers' Day",month:9,day:5},
-  {name:"Patriot Day",month:9,day:11},
-  {name:"International Day of Peace",month:9,day:21},
-  {name:"World Tourism Day",month:9,day:27},
-  {name:"World Heart Day",month:9,day:29},
-  {name:"World Vegetarian Day",month:10,day:1},
-  {name:"Mahatma Gandhi Jayanti",month:10,day:2},
-  {name:"World Animal Day",month:10,day:4},
-  {name:"World Teachers' Day",month:10,day:5},
-  {name:"World Mental Health Day",month:10,day:10},
-  {name:"Global Handwashing Day",month:10,day:15},
-  {name:"World Food Day",month:10,day:16},
-  {name:"International Day for Poverty Eradication",month:10,day:17},
-  {name:"World Polio Day",month:10,day:24},
-  {name:"Halloween",month:10,day:31},
-  {name:"World Kindness Day",month:11,day:13},
-  {name:"Children's Day (India)",month:11,day:14},
-  {name:"International Day for Tolerance",month:11,day:16},
-  {name:"International Men's Day",month:11,day:19},
-  {name:"Universal Children's Day",month:11,day:20},
-  {name:"World Television Day",month:11,day:21},
-  {name:"Constitution Day (India)",month:11,day:26},
-  {name:"World AIDS Day",month:12,day:1},
-  {name:"Wildlife Conservation Day",month:12,day:4},
-  {name:"World Soil Day",month:12,day:5},
-  {name:"International Anti-Corruption Day",month:12,day:9},
-  {name:"Human Rights Day",month:12,day:10},
-  {name:"National Mathematics Day",month:12,day:22},
-  {name:"Christmas",month:12,day:25},
-  {name:"New Year's Eve",month:12,day:31}
-];
-
-const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
-let legacyEvents = ["Green Campus Drive 2023","Eco-Art Exhibition","Seed Ball Workshop","Solar Energy Fair","Zero Waste Challenge"];
-
-function init() {
-  const sel = document.getElementById('monthSelect');
-  const curMonth = new Date().getMonth();
-  MONTHS.forEach((m, i) => {
-    const opt = document.createElement('option');
-    opt.value = i + 1;
-    opt.textContent = m;
-    if (i === curMonth) opt.selected = true;
-    sel.appendChild(opt);
-  });
-  renderLegacy();
-}
-
-function renderLegacy() {
-  const c = document.getElementById('legacyTags');
-  c.innerHTML = legacyEvents.map((e, i) =>
-    `<div class="tag">${e}<span class="remove" onclick="removeLegacy(${i})">×</span></div>`
-  ).join('');
-}
-
-function addLegacy() {
-  const inp = document.getElementById('legacyInput');
-  if (inp.value.trim()) {
-    legacyEvents.push(inp.value.trim());
-    inp.value = '';
-    renderLegacy();
-  }
-}
-
-function removeLegacy(i) {
-  legacyEvents.splice(i, 1);
-  renderLegacy();
-}
-
-function getMonthEvents(month) {
-  return EVENTS.filter(e => e.month === parseInt(month));
-}
-
-function showUpcoming(month) {
-  const events = getMonthEvents(month);
-  const strip = document.getElementById('eventsStrip');
-  strip.innerHTML = events.map(e =>
-    `<div class="event-chip">${e.day} — ${e.name}</div>`
-  ).join('');
-}
-
-async function generateIdeas() {
-  const month = document.getElementById('monthSelect').value;
-  const focus = document.getElementById('focusSelect').value;
-  const monthName = MONTHS[month - 1];
-  const monthEvents = getMonthEvents(month);
-
-  const btn = document.getElementById('genBtn');
-  btn.disabled = true;
-  btn.textContent = 'Growing ideas...';
-
-  const resultsArea = document.getElementById('resultsArea');
-  resultsArea.classList.add('visible');
-  showUpcoming(month);
-
-  const ideasGrid = document.getElementById('ideasGrid');
-  ideasGrid.innerHTML = `<div class="loading-pulse"><div class="dot-spin"></div> Claude is generating tailored event ideas...</div>`;
-
-  const eventsList = monthEvents.map(e => `- ${e.name} (${monthName} ${e.day})`).join('\n');
-  const legacyList = legacyEvents.length ? legacyEvents.join(', ') : 'None provided';
-
-  const prompt = `You are an event planner for the Greenovation Club — a school/college club focused on innovation, sustainability, and environmental action.
-
-The club wants fresh, creative event ideas for ${monthName}.
-
-Calendar events happening in ${monthName}:
-${eventsList}
-
-Club focus area: ${focus === 'general' ? 'General (all themes welcome)' : focus}
-
-Past legacy events the club has run:
-${legacyList}
-
-Generate exactly 4 unique, creative Greenovation Club event ideas for ${monthName}. Each should be inspired by one or more of the calendar events above, feel fresh compared to the legacy events, and be actionable for a student club.
-
-Respond ONLY with a valid JSON array with no markdown, no preamble. Each object must have:
-- "title": string (creative event name)
-- "inspired_by": string (which calendar event(s) it connects to)
-- "description": string (2-3 sentences explaining the event concept)
-- "format": string (e.g. "Workshop", "Exhibition", "Awareness Drive", "Competition", "Campaign")
-- "impact": string ("Environmental", "Social", or "Educational")
-
-Return only the JSON array.`;
-
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
-    const data = await res.json();
-    const raw = data.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
-    const ideas = JSON.parse(raw);
-    renderIdeas(ideas);
-  } catch (e) {
-    ideasGrid.innerHTML = `<div class="error-msg">Could not generate ideas. Please try again.</div>`;
-  }
-
-  btn.disabled = false;
-  btn.textContent = 'Generate event ideas';
-}
-
-function badgeClass(impact) {
-  if (impact === 'Environmental') return 'badge-green';
-  if (impact === 'Social') return 'badge-amber';
-  return 'badge-blue';
-}
-
-function renderIdeas(ideas) {
-  const grid = document.getElementById('ideasGrid');
-  grid.innerHTML = ideas.map(idea => `
-    <div class="idea-card">
-      <div class="idea-header">
-        <div class="idea-title">${idea.title}</div>
-        <div class="idea-badge ${badgeClass(idea.impact)}">${idea.impact}</div>
-      </div>
-      <div class="idea-desc">${idea.description}</div>
-      <div class="idea-meta">
-        Format: <span>${idea.format}</span>
-        &nbsp;&nbsp;|&nbsp;&nbsp;
-        Inspired by: <span>${idea.inspired_by}</span>
+<div class="csec">
+  <div class="rcount" id="rc"></div>
+  <div class="grid" id="grid"></div>
+</div>
+<div class="overlay" id="ov">
+  <div class="modal">
+    <div class="mhead">
+      <button class="mclose" id="mc">&#10005;</button>
+      <div class="mmtag" id="mm"></div>
+      <div class="mtitle" id="mt"></div>
+      <div class="mdaterow">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span id="md"></span>
       </div>
     </div>
-  `).join('');
+    <div class="mbody">
+      <div class="mlabel">About this day</div>
+      <div class="mdesc" id="mde"></div>
+      <div class="msig">
+        <div class="msiglabel">Why it matters</div>
+        <div class="msigtext" id="ms"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+var E=[
+{n:"HAPPY NEW YEAR",m:"JANUARY",d:"1ST JANUARY",
+de:"New Year's Day marks the first day of the year in the Gregorian calendar. It is celebrated worldwide with festivities, fireworks, family gatherings, and heartfelt resolutions. People bid farewell to the past year and welcome new beginnings with hope and joy.",
+si:"A universal celebration of fresh starts, it encourages reflection on personal growth and motivates people to set positive goals for the year ahead."},
+{n:"SWAMI VIVEKANANDA JAYANTI",m:"JANUARY",d:"12TH JANUARY",
+de:"Swami Vivekananda Jayanti, also celebrated as National Youth Day in India, marks the birth anniversary of the great spiritual leader Swami Vivekananda (born 1863). He introduced Hindu philosophies of Vedanta and Yoga to the Western world and is revered for his iconic speech at the Parliament of World's Religions in Chicago in 1893.",
+si:"His teachings on self-belief, service to humanity, and the harmony of religions continue to inspire millions of youth and spiritual seekers across the world."},
+{n:"INDIAN ARMY DAY",m:"JANUARY",d:"15TH JANUARY",
+de:"Indian Army Day is celebrated every year on January 15 to commemorate the day when Field Marshal K.M. Cariappa took over as the first Commander-in-Chief of the Indian Army from the last British Commander-in-Chief in 1949.",
+si:"This day honours the bravery, sacrifice, and dedication of Indian soldiers who protect the nation's borders and maintain internal security."},
+{n:"NATIONAL HUGGING DAY",m:"JANUARY",d:"21ST JANUARY",
+de:"National Hugging Day, originally founded by Rev. Kevin Zaborney in 1986, encourages people to hug their friends and family more openly. It acknowledges the physical and emotional benefits of human touch and warmth.",
+si:"Research shows that hugging reduces stress, lowers blood pressure, and boosts feelings of happiness, making this a day dedicated to human connection and emotional wellbeing."},
+{n:"NATIONAL GIRL CHILD DAY",m:"JANUARY",d:"24TH JANUARY",
+de:"National Girl Child Day is observed in India on January 24 every year since 2008. Initiated by the Ministry of Women and Child Development, it raises awareness about the inequalities faced by girl children and promotes their rights, education, and health.",
+si:"It highlights the urgent need to eliminate gender-based discrimination, combat female foeticide, and empower girls to reach their full potential in society."},
+{n:"INTERNATIONAL DAY OF EDUCATION",m:"JANUARY",d:"24TH JANUARY",
+de:"Proclaimed by the United Nations in 2018 and first celebrated in 2019, the International Day of Education recognises the role of education in building peace and sustainable development. Each year carries a unique theme focusing on equitable access to quality education globally.",
+si:"Education is a fundamental human right and the foundation for individual empowerment, social progress, and global prosperity, making this day critical for raising awareness about educational inequity worldwide."},
+{n:"NATIONAL TOURISM DAY",m:"JANUARY",d:"25TH JANUARY",
+de:"National Tourism Day in India is observed on January 25 to promote tourism, raise awareness about the importance of tourism to the Indian economy, and encourage exploration of India's diverse cultural heritage and natural landscapes.",
+si:"Tourism is a major contributor to India's GDP and employment. This day reminds citizens to explore their own country's treasures and highlights the sector's potential for economic growth."},
+{n:"REPUBLIC DAY",m:"JANUARY",d:"26TH JANUARY",
+de:"India's Republic Day, celebrated on January 26 every year, commemorates the day in 1950 when the Constitution of India came into effect. A grand parade is held at Kartavya Path in New Delhi, showcasing military might, cultural diversity, and national pride.",
+si:"Republic Day symbolises India's democratic foundations, constitutional values, and the sovereign will of its people. It is one of the country's most important national celebrations."},
+{n:"INTERNATIONAL STREET CHILDREN'S DAY",m:"JANUARY",d:"31ST JANUARY / 12TH APRIL",
+de:"International Street Children's Day raises global awareness about the millions of children living and working on the streets. Established by the Consortium for Street Children, it highlights their struggles and advocates for their rights, safety, and dignity.",
+si:"An estimated 150 million children live on the streets globally. This day calls on governments, NGOs, and communities to ensure every child has access to shelter, education, healthcare, and protection."},
+{n:"WORLD WETLANDS DAY",m:"FEBRUARY",d:"2ND FEBRUARY",
+de:"World Wetlands Day is observed on February 2 to commemorate the adoption of the Ramsar Convention on Wetlands in 1971. Wetlands including marshes, peatlands, rivers, lakes, and coastal areas are among the world's most vital and productive ecosystems.",
+si:"Wetlands support 40% of the world's species, act as natural water filters, and provide flood protection. This day raises awareness about their critical importance and the urgent need to halt their destruction."},
+{n:"WORLD CANCER DAY",m:"FEBRUARY",d:"4TH FEBRUARY",
+de:"World Cancer Day, led by the Union for International Cancer Control (UICC), is observed on February 4 annually. It brings together organisations worldwide to raise awareness about cancer prevention, early detection, and treatment.",
+si:"Cancer is one of the leading causes of death worldwide. This day drives global action to reduce the cancer burden, improve education, and promote early screening that can save millions of lives."},
+{n:"NATIONAL PIZZA DAY",m:"FEBRUARY",d:"9TH FEBRUARY",
+de:"National Pizza Day, celebrated on February 9 primarily in the United States, is an annual tribute to one of the world's most beloved foods. Pizza, originally from Naples, Italy, has evolved into countless regional and international variations enjoyed globally.",
+si:"National Pizza Day celebrates culinary creativity, the joy of sharing a meal, and the global cultural fusion represented by this iconic dish."},
+{n:"MAHARISHI DAYANAND SARASWATI'S JAYANTI",m:"FEBRUARY",d:"12TH FEBRUARY",
+de:"This Jayanti marks the birth anniversary of the great 19th-century social reformer and founder of the Arya Samaj movement in 1875. He was a fierce critic of idolatry and caste discrimination, championing Vedic values, women's education, and social equality.",
+si:"His reformist movement inspired leaders of India's independence struggle. His call for rationalism, education, and social justice continues to resonate with modern India's values."},
+{n:"WORLD RADIO DAY",m:"FEBRUARY",d:"13TH FEBRUARY",
+de:"World Radio Day was proclaimed by UNESCO in 2011 and first celebrated on February 13, 2012 - the date the United Nations Radio was established in 1946. Radio remains one of the most powerful and accessible media platforms, reaching billions of people worldwide.",
+si:"Radio is a unique medium for democratic discourse, cultural diversity, and emergency communication. This day celebrates its reach and resilience in the digital age."},
+{n:"VALENTINES DAY",m:"FEBRUARY",d:"14TH FEBRUARY",
+de:"Valentine's Day, celebrated on February 14, is dedicated to expressing love and affection to those who matter most. The day traces its roots to the legend of Saint Valentine and evolved through medieval traditions of courtly love into the globally celebrated occasion it is today.",
+si:"Valentine's Day reminds us of the importance of expressing love and appreciation openly. It is an occasion to strengthen bonds and celebrate the people who bring joy and meaning to our lives."},
+{n:"VALENTINES WEEK",m:"FEBRUARY",d:"7TH FEB - 15TH FEB",
+de:"Valentine's Week is a 9-day celebration of love and friendship beginning February 7. Each day has its own theme: Rose Day (7th), Propose Day (8th), Chocolate Day (9th), Teddy Day (10th), Promise Day (11th), Hug Day (12th), Kiss Day (13th), Valentine's Day (14th), and Slap Day (15th).",
+si:"Valentine's Week offers a fun, extended way to celebrate various dimensions of love, affection, and companionship. It is widely observed in India and across Asia, particularly by young people."},
+{n:"SLAP DAY / SINGLES AWARENESS DAY",m:"FEBRUARY",d:"15TH FEBRUARY",
+de:"February 15 is humorously known as Slap Day in the Valentine's Week calendar - a symbolic day to leave behind toxic or disappointing relationships. It is also Singles Awareness Day, a lighthearted celebration of single life that encourages self-love and friendship.",
+si:"This day promotes the idea that romantic love is not the only valid form of love. It celebrates individuality, self-care, and meaningful platonic friendships."},
+{n:"INTERNATIONAL CHILDHOOD CANCER DAY",m:"FEBRUARY",d:"15TH FEBRUARY",
+de:"International Childhood Cancer Day (ICCD), observed on February 15, is a global campaign to raise awareness about childhood cancer, express support for children and adolescents with cancer, and advocate for improved access to diagnosis and treatment worldwide.",
+si:"Childhood cancer is the leading disease-related cause of death in children in many countries. This day rallies global support to improve survival rates, reduce suffering, and ensure no family faces this diagnosis alone."},
+{n:"WORLD DAY OF SOCIAL JUSTICE",m:"FEBRUARY",d:"20TH FEBRUARY",
+de:"The World Day of Social Justice, observed on February 20 since 2009, was established by the United Nations to promote efforts to tackle issues such as poverty, inequality, discrimination, and exclusion.",
+si:"Social justice is the foundation of peaceful and equitable societies. This day calls for fair distribution of wealth, opportunities, and privileges within a society, which is vital for sustainable global development."},
+{n:"INTERNATIONAL MOTHER LANGUAGE DAY",m:"FEBRUARY",d:"21ST FEBRUARY",
+de:"International Mother Language Day, proclaimed by UNESCO in 1999 and observed on February 21 since 2000, commemorates the 1952 Bengali Language Movement in East Pakistan, when students were killed while protesting for recognition of the Bengali language.",
+si:"Linguistic and cultural diversity are humanity's greatest treasures. This day promotes the preservation of all mother languages and emphasises multilingual education as a tool for inclusion."},
+{n:"WORLD DAY OF THINKERS AND FOUNDERS",m:"FEBRUARY",d:"22ND FEBRUARY",
+de:"World Day of Thinkers and Founders is celebrated on February 22 to honour the contributions of visionaries, philosophers, innovators, and those who established lasting institutions, movements, or ideas that have shaped human civilisation.",
+si:"Celebrating thinkers and founders encourages a culture of intellectual curiosity, innovation, and bold vision - qualities essential for solving humanity's greatest challenges."},
+{n:"INTERNATIONAL POLAR BEAR DAY",m:"FEBRUARY",d:"27TH FEBRUARY",
+de:"International Polar Bear Day, celebrated on February 27, was created by Polar Bears International to raise awareness about the challenges facing polar bears as climate change melts the Arctic sea ice they depend on for hunting, breeding, and resting.",
+si:"Polar bears are a symbol of Arctic health and an indicator species for climate change. Their rapid population decline is a stark warning about the catastrophic impact of global warming on biodiversity."},
+{n:"WORLD NGO DAY",m:"FEBRUARY",d:"27TH FEBRUARY",
+de:"World NGO Day, celebrated on February 27, was officially recognised in 2010 and first celebrated globally in 2014. It honours the work of non-governmental organisations and their volunteers who dedicate their lives to humanitarian causes around the world.",
+si:"NGOs play an irreplaceable role in addressing poverty, human rights violations, environmental crises, and education gaps. This day recognises millions of unsung heroes who serve humanity selflessly."},
+{n:"HAPPY POKEMON DAY",m:"FEBRUARY",d:"27TH FEBRUARY",
+de:"Pokemon Day is celebrated annually on February 27, marking the anniversary of the release of the original Pokemon Red and Pokemon Green video games in Japan in 1996. Since then, Pokemon has grown into one of the highest-grossing media franchises of all time.",
+si:"Pokemon has brought joy and a sense of adventure to generations of fans worldwide. Pokemon Day celebrates the enduring legacy of friendship, exploration, and the iconic phrase Gotta catch them all!"},
+{n:"NATIONAL SCIENCE DAY",m:"FEBRUARY",d:"28TH FEBRUARY",
+de:"National Science Day is celebrated in India on February 28 to mark the discovery of the Raman Effect by physicist Sir C.V. Raman on this day in 1928. The Raman Effect explains the scattering of light and earned him the Nobel Prize in Physics in 1930.",
+si:"Science drives innovation, progress, and the quality of human life. National Science Day inspires the next generation of scientists and highlights the importance of scientific research in India's development."},
+{n:"HAPPY INTERNATIONAL WOMEN'S DAY",m:"MARCH",d:"8TH MARCH",
+de:"International Women's Day (IWD), observed on March 8, is a global day celebrating the social, economic, cultural, and political achievements of women. It also marks a call to action for accelerating gender parity. The day has been observed since the early 1900s.",
+si:"Despite enormous progress, gender inequality persists worldwide in pay, representation, and opportunity. IWD reminds society that achieving true equality benefits everyone and that the fight for women's rights is never over."},
+{n:"WORLD SLEEP DAY",m:"MARCH",d:"13TH MARCH",
+de:"World Sleep Day is an annual event organised by the World Sleep Society, held on the Friday before the spring equinox. It raises awareness about sleep disorders and the importance of healthy sleep, covering topics like insomnia, sleep apnoea, and the relationship between sleep and overall health.",
+si:"Adequate sleep is a pillar of good health alongside nutrition and exercise. In our always-connected world, sleep deprivation is a growing public health epidemic linked to chronic disease, mental illness, and accidents."},
+{n:"SIR ALBERT EINSTEIN'S BIRTHDAY",m:"MARCH",d:"14TH MARCH",
+de:"Albert Einstein was born on March 14, 1879, in Ulm, Germany. He is widely regarded as one of the greatest physicists of all time. His development of the theory of relativity and the famous equation E=mc2 revolutionised our understanding of space, time, gravity, and energy.",
+si:"Einstein's genius reminds us that curiosity and imagination are the foundations of great discovery. His work changed the course of human civilisation and continues to underpin modern physics and technology."},
+{n:"PI DAY",m:"MARCH",d:"14TH MARCH",
+de:"Pi Day is celebrated on March 14 (3/14) since the first three significant figures of pi are 3, 1, and 4. Pi is the mathematical constant representing the ratio of a circle's circumference to its diameter, approximately 3.14159. The day was founded by physicist Larry Shaw in 1988.",
+si:"Pi is one of the most famous and mysterious numbers in mathematics, appearing in fields from geometry to quantum mechanics. Pi Day celebrates the beauty and wonder of mathematics."},
+{n:"ST PATRICKS DAY",m:"MARCH",d:"17TH MARCH",
+de:"St. Patrick's Day is a cultural and religious celebration held annually on March 17, the death date of Saint Patrick (c. 385-461 AD), the foremost patron saint of Ireland. It commemorates the arrival of Christianity in Ireland and celebrates Irish heritage with parades, green clothing, and traditional music.",
+si:"St. Patrick's Day has grown into a global celebration of Irish culture. Major cities around the world, from New York to Sydney, hold parades, making it one of the most internationally celebrated national holidays."},
+{n:"THE SAIYAN DAY (DRAGON BALL ANIME)",m:"MARCH",d:"18TH MARCH",
+de:"Saiyan Day is a fan-created celebration on March 18, chosen because 3-1-8 sounds like Sa-i-ya in Japanese. It honours the Saiyan race from the Dragon Ball anime and manga franchise created by Akira Toriyama, celebrating iconic warriors like Goku, Vegeta, and Gohan.",
+si:"Dragon Ball is one of the most influential anime franchises in history. Saiyan Day is a testament to the deep cultural impact of anime and the passionate global fan communities it has inspired."},
+{n:"INTERNATIONAL DAY OF HAPPINESS",m:"MARCH",d:"20TH MARCH",
+de:"The International Day of Happiness was established by the United Nations in 2012 and has been observed on March 20 since 2013. The day recognises the importance of happiness and wellbeing as universal human goals.",
+si:"In a world increasingly driven by metrics of wealth and productivity, this day reminds us that the ultimate goal of all human endeavour is happiness, achievable through community, kindness, and purpose."},
+{n:"INTERNATIONAL DAY OF FORESTS",m:"MARCH",d:"21ST MARCH",
+de:"The International Day of Forests, established by the United Nations in 2012 and observed on March 21, celebrates and raises awareness of the importance of all types of forests. It highlights the essential role forests play in sustaining life on Earth.",
+si:"Forests cover 31% of global land, absorb carbon, produce oxygen, harbour biodiversity, and sustain billions of lives. Rapid deforestation threatens ecosystems, climate stability, and indigenous communities worldwide."},
+{n:"WORLD WATER DAY",m:"MARCH",d:"22ND MARCH",
+de:"World Water Day is held on March 22 every year since 1993, following a recommendation from the 1992 UN Conference on Environment and Development. It highlights the global water crisis, with billions lacking access to safe drinking water and sanitation.",
+si:"Water is life. With climate change intensifying droughts and floods and global water demand rising, sustainable water management is non-negotiable for human survival."},
+{n:"MARTYR'S DAY",m:"MARCH",d:"23RD MARCH",
+de:"Martyr's Day (Shaheed Diwas) is observed in India on March 23 to honour Bhagat Singh, Sukhdev Thapar, and Shivaram Rajguru - three young revolutionary freedom fighters who were hanged by the British colonial government on this date in 1931 in Lahore.",
+si:"These three young men sacrificed their lives for India's independence. Their courage, patriotism, and revolutionary spirit continue to inspire generations of Indians."},
+{n:"APRIL FOOLS DAY",m:"APRIL",d:"1ST APRIL",
+de:"April Fools' Day, observed on April 1 every year, is a day of practical jokes, hoaxes, and humour. Its exact origins remain uncertain, but references date back to the 1500s in Europe. Today it is celebrated worldwide with lighthearted pranks between friends and elaborate media hoaxes.",
+si:"Laughter is one of humanity's most powerful tools for bonding and stress relief. April Fools' Day celebrates humour, creativity, and the joy of not taking life too seriously."},
+{n:"INTERNATIONAL CHILDREN'S BOOK DAY",m:"APRIL",d:"2ND APRIL",
+de:"International Children's Book Day, observed on April 2 since 1967 on the birthday of Hans Christian Andersen, is sponsored by the International Board on Books for Young People. It celebrates books and reading for children and promotes quality children's literature worldwide.",
+si:"Reading instils imagination, empathy, language skills, and a lifelong love of learning in children. Quality children's literature is one of the most powerful tools for education and child development."},
+{n:"WORLD HEALTH DAY",m:"APRIL",d:"7TH APRIL",
+de:"World Health Day is observed on April 7 each year, the founding date of the World Health Organization (WHO) in 1948. Each year focuses on a specific global health challenge. Past themes have covered mental health, climate and health, health equity, and universal health coverage.",
+si:"Health is the foundation of human potential. World Health Day mobilises governments, civil society, and individuals to address pressing health challenges and work toward Health for All."},
+{n:"WORLD SIBLINGS DAY (US AND CANADA)",m:"APRIL",d:"10TH APRIL",
+de:"National Siblings Day, observed on April 10 in the United States and Canada, was founded by Claudia Evart in 1995 to honour the bonds between brothers and sisters. She created the day in memory of her siblings who died young.",
+si:"Siblings are often our first friends, greatest rivals, and most enduring companions. This day celebrates those unique relationships forged by shared childhood, family, and lifelong memories."},
+{n:"DAY OF SILENCE",m:"APRIL",d:"15TH APRIL",
+de:"The Day of Silence is an annual student-led event organised by GLSEN in the United States. Students take a vow of silence to call attention to the silencing effect of anti-LGBTQ+ bullying, harassment, and discrimination in schools.",
+si:"Creating safe and inclusive school environments is essential for all students to thrive. The Day of Silence advocates for a world where all young people are respected and valued regardless of their identity."},
+{n:"SON GOKU'S BIRTHDAY (DRAGON BALL ANIME)",m:"APRIL",d:"16TH APRIL",
+de:"April 16 is celebrated by Dragon Ball fans worldwide as the birthday of Son Goku, the beloved protagonist of Akira Toriyama's Dragon Ball series. Goku, a Saiyan warrior raised on Earth, is known for his incredible strength, pure heart, and insatiable love of battle.",
+si:"Goku is one of the most iconic characters in anime history and a symbol of perseverance, kindness, and the spirit of self-improvement. His birthday is a joyful celebration for millions of fans worldwide."},
+{n:"EARTH DAY",m:"APRIL",d:"22ND APRIL",
+de:"Earth Day, first celebrated on April 22, 1970, is the world's largest environmental movement. It was founded by U.S. Senator Gaylord Nelson after a massive 1969 oil spill in Santa Barbara. Today, over one billion people in 193 countries participate in Earth Day activities.",
+si:"Our planet faces unprecedented environmental challenges including climate change, deforestation, ocean pollution, and biodiversity loss. Earth Day rallies billions of people to take action for a sustainable future."},
+{n:"WORLD BOOK DAY",m:"APRIL",d:"23RD APRIL",
+de:"World Book Day is observed on April 23 - chosen because it is the date of death of Miguel de Cervantes, William Shakespeare, and Inca Garcilaso de la Vega in 1616. It was proclaimed by UNESCO in 1995 to promote reading, publishing, and copyright protection.",
+si:"Books are the vessels of human knowledge, imagination, and culture. World Book Day promotes literacy, access to books, and the enduring value of reading as a foundation for education and empathy."},
+{n:"ENGLISH LANGUAGE DAY",m:"APRIL",d:"23RD APRIL",
+de:"English Language Day, observed on April 23, was established by the United Nations in 2010. It celebrates the history and achievements of the English language and coincides with the birth and death anniversary of William Shakespeare.",
+si:"English is spoken by over 1.5 billion people globally and serves as the world's primary language of diplomacy, science, technology, and trade, making it a unifying force across cultures and nations."},
+{n:"INTERNATIONAL DANCE DAY",m:"APRIL",d:"29TH APRIL",
+de:"International Dance Day, created by the Dance Committee of the International Theatre Institute, is observed on April 29 since 1982. The date was chosen to commemorate the birthday of Jean-Georges Noverre (1727-1810), the creator of modern ballet.",
+si:"Dance is one of humanity's oldest and most universal forms of expression, communication, and storytelling. International Dance Day celebrates its power to transcend cultural and political boundaries."},
+{n:"MAY DAY",m:"MAY",d:"1ST MAY",
+de:"May Day, or International Workers' Day, is celebrated on May 1 to commemorate the historic struggle for workers' rights. It traces its roots to the Haymarket affair in Chicago in 1886, when workers rallied for an eight-hour workday. Today it is a public holiday in over 80 countries.",
+si:"The labour movement fundamentally improved the lives of working people worldwide. May Day is a reminder that hard-won rights including the weekend, minimum wage, and safe working conditions must be protected and expanded."},
+{n:"GREENERY DAY",m:"MAY",d:"4TH MAY",
+de:"Greenery Day (Midori no Hi) is a national public holiday in Japan observed on May 4 as part of Golden Week. It was established in 1989 to honour Emperor Hirohito, who was known for his deep love of nature and plants.",
+si:"In an increasingly urbanised world, Greenery Day reminds us of our deep connection to nature and the importance of preserving natural spaces for physical and mental wellbeing."},
+{n:"INFORMATION NO DIET DAY",m:"MAY",d:"6TH MAY",
+de:"No Diet Day, observed on May 6, was founded by British feminist Mary Evans Young in 1992. It promotes body acceptance, celebrates body diversity, and challenges diet culture, encouraging people to focus on health and self-acceptance regardless of size or shape.",
+si:"Diet culture is linked to eating disorders, body dysmorphia, and poor mental health, especially among young women. No Diet Day advocates for a healthier, kinder relationship with our bodies and with food."},
+{n:"WORLD RED CROSS DAY",m:"MAY",d:"8TH MAY",
+de:"World Red Cross and Red Crescent Day is observed on May 8, the birthday of Henry Dunant (1828), founder of the International Committee of the Red Cross and first recipient of the Nobel Peace Prize in 1901. The day recognises the humanitarian work of Red Cross societies around the world.",
+si:"The Red Cross and Red Crescent movement serves over 160 countries, providing emergency relief, blood services, disaster response, and community health programs. This day honours those who serve humanity in its most vulnerable moments."},
+{n:"GOKU DAY",m:"MAY",d:"9TH MAY",
+de:"Goku Day is an officially recognised celebration in Japan, established by Toei Animation and approved by the Japan Anniversary Association. May 9 was chosen because 5 and 9 can be read as Go and Ku in Japanese, spelling Goku.",
+si:"Goku Day is a testament to the massive cultural footprint of the Dragon Ball franchise and the way anime characters can achieve a level of cultural significance that transcends entertainment."},
+{n:"NATIONAL TECHNOLOGY DAY",m:"MAY",d:"11TH MAY",
+de:"National Technology Day is observed in India on May 11 to mark the anniversary of Operation Shakti - India's successful nuclear weapons tests conducted at Pokhran, Rajasthan, on May 11, 1998. The day also celebrates achievements including the Trishul missile test and the first flight of the indigenous aircraft Hansa-3.",
+si:"This day honours India's scientific and technological capabilities and inspires future generations to pursue innovation in science, engineering, and technology in service of the nation."},
+{n:"INTERNATIONAL DAY OF FAMILIES",m:"MAY",d:"15TH MAY",
+de:"The International Day of Families is observed on May 15 each year since 1994, proclaimed by the UN General Assembly. It highlights the importance of families as the fundamental unit of society and raises awareness about issues relating to family wellbeing worldwide.",
+si:"Strong, healthy families are the cornerstone of stable communities and societies. This day encourages policies that support families in facing modern challenges like economic pressures, migration, and changing family structures."},
+{n:"BROTHER'S DAY",m:"MAY",d:"24TH MAY",
+de:"Brother's Day, observed on May 24 in many countries, is a day to honour and celebrate the bond between brothers. Whether biological, adoptive, or chosen, brothers play an important role in shaping our lives through shared experiences, support, and friendship.",
+si:"Brother's Day offers a dedicated moment to appreciate the unique bond of brotherhood and acknowledge the role brothers play in our personal growth and happiness."},
+{n:"WORLD FOOTBALL DAY",m:"MAY",d:"25TH MAY",
+de:"World Football Day is observed on May 25, recognised by the UN General Assembly in 2023 to celebrate football (soccer). The sport is played by over 250 million players across 200+ countries, making it the world's most popular game.",
+si:"Football is a universal language that transcends borders, cultures, and social divides. It promotes physical health, teamwork, fair play, and community spirit on a global scale."},
+{n:"THE DAY OF BROTHERS AND SISTERS",m:"MAY",d:"31ST MAY",
+de:"The Day of Brothers and Sisters, observed on May 31, is an informal celebration of the bond between siblings. It is a day to appreciate the unique relationships that develop between brothers and sisters and to reconnect with those we share our childhood memories with.",
+si:"Sibling relationships are among the longest-lasting in our lives. This day encourages people to reach out to their siblings, express gratitude, and strengthen family bonds that shape our identity."},
+{n:"WORLD NO TOBACCO DAY",m:"MAY",d:"31ST MAY",
+de:"World No Tobacco Day is observed on May 31 every year since 1987, created by the World Health Organization. It draws global attention to the tobacco epidemic and the preventable death and disease it causes. Each year focuses on a specific theme such as tobacco's impact on youth or the environment.",
+si:"Tobacco kills over 8 million people every year - more than any other single cause. This day mobilises action to protect people from the harmful effects of tobacco use and secondhand smoke exposure."},
+{n:"WORLD ENVIRONMENT DAY",m:"JUNE",d:"5TH JUNE",
+de:"World Environment Day, celebrated on June 5 since 1974, is the United Nations' principal vehicle for encouraging awareness and action for the protection of the environment. It is celebrated by millions of people across more than 143 countries.",
+si:"The natural environment is the source of all life and human wellbeing. World Environment Day mobilises global action to address climate change, biodiversity loss, land degradation, and pollution."},
+{n:"WORLD OCEANS DAY",m:"JUNE",d:"8TH JUNE",
+de:"World Oceans Day has been officially recognised by the United Nations since 2008 and is observed on June 8. It was proposed at the Earth Summit in Rio de Janeiro in 1992. The day celebrates the ocean's beauty while raising awareness about the critical role it plays in sustaining life on Earth.",
+si:"The ocean covers over 70% of Earth's surface, produces half the world's oxygen, and regulates climate. Yet it faces severe threats from plastic pollution, overfishing, and rising sea temperatures."},
+{n:"WORLD DAY AGAINST CHILD LABOUR",m:"JUNE",d:"12TH JUNE",
+de:"World Day Against Child Labour, launched by the ILO in 2002, is observed on June 12. It focuses global attention on the extent of child labour and the actions needed to eliminate it. Around 160 million children worldwide are still engaged in child labour.",
+si:"Child labour robs children of their fundamental rights to childhood, education, and health. Eliminating it requires universal education, poverty reduction, and strong legal protections for children."},
+{n:"WORLD BLOOD DONOR DAY",m:"JUNE",d:"14TH JUNE",
+de:"World Blood Donor Day is held on June 14, the birthday of Karl Landsteiner (1868), who discovered the ABO blood group system and received the Nobel Prize in Physiology or Medicine in 1930. The event raises awareness about the need for safe blood and thanks voluntary blood donors.",
+si:"Blood cannot be manufactured and can only come from voluntary donors. Safe blood transfusions save millions of lives every year, especially in surgeries, childbirth, trauma, and cancer treatment."},
+{n:"WORLD REFUGEE DAY",m:"JUNE",d:"20TH JUNE",
+de:"World Refugee Day is observed every year on June 20 to honour refugees around the globe. Established by the United Nations in 2000, it draws attention to the plight of people forced to flee their homes due to war, persecution, and disaster.",
+si:"With over 100 million forcibly displaced people in the world, this day calls for empathy, solidarity, and concrete support for refugees who deserve safety, dignity, and the opportunity to rebuild their lives."},
+{n:"INTERNATIONAL YOGA DAY",m:"JUNE",d:"21ST JUNE",
+de:"International Day of Yoga is celebrated annually on June 21 since 2015, following its declaration by the UN General Assembly on December 11, 2014, upon India's initiative. June 21 - the summer solstice - was chosen for its special significance in many traditions.",
+si:"Yoga is a 5,000-year-old Indian tradition embraced by hundreds of millions worldwide. This day celebrates yoga as a universal tool for physical health, mental clarity, and inner peace."},
+{n:"INTERNATIONAL DAY AGAINST CHILD LABOUR",m:"JUNE",d:"26TH JUNE",
+de:"This observance on June 26 focuses on policy advocacy and legal action against child labour. It amplifies calls on governments to strengthen and enforce child labour laws, expand education, and provide economic support to vulnerable families.",
+si:"Every child has the right to education, play, and a safe childhood free from exploitation. Ending child labour is essential for breaking cycles of poverty and inequality."},
+{n:"INTERNATIONAL DAY AGAINST ILLICIT TRAFFICKING",m:"JUNE",d:"26TH JUNE",
+de:"The International Day against Drug Abuse and Illicit Trafficking, observed on June 26 since 1989, is organised by the United Nations Office on Drugs and Crime (UNODC). The goal is to strengthen global action towards a world free of drug abuse.",
+si:"Drug abuse and trafficking devastate individuals, families, and communities, fuelling violence, corruption, and the destruction of human potential. This day calls for evidence-based prevention, treatment, and law enforcement."},
+{n:"NATIONAL DOCTORS' DAY (INDIA)",m:"JULY",d:"1ST JULY",
+de:"National Doctors' Day is celebrated in India on July 1 every year to honour the legendary physician and former Chief Minister of West Bengal, Dr. Bidhan Chandra Roy, on his birth and death anniversary. The day recognises the invaluable contribution of doctors to society.",
+si:"Doctors are the guardians of human health and life. National Doctors' Day expresses gratitude to the medical community for their dedication and compassionate service, especially highlighted during the COVID-19 pandemic."},
+{n:"WORLD CHOCOLATE DAY",m:"JULY",d:"7TH JULY",
+de:"World Chocolate Day, also known as International Chocolate Day, is celebrated on July 7. The date is said to mark the anniversary of the introduction of chocolate to Europe in 1550. Today, chocolate is one of the world's most beloved foods with a global industry worth over $130 billion.",
+si:"Chocolate is more than just a delicious treat. It has a rich cultural history, supports millions of farmers, and contains compounds linked to mood enhancement and heart health. This day celebrates its universal joy!"},
+{n:"WORLD POPULATION DAY",m:"JULY",d:"11TH JULY",
+de:"World Population Day was established by the United Nations in 1989 and is observed on July 11. It focuses on the urgency and importance of population issues, inspired by the day the global population reached 5 billion on July 11, 1987.",
+si:"With the world population now exceeding 8 billion, this day highlights the need for sustainable resource management, equitable development, and the protection of reproductive rights for all people."},
+{n:"WORLD DAY FOR INTERNATIONAL JUSTICE",m:"JULY",d:"17TH JULY",
+de:"The Day of International Criminal Justice is observed on July 17 to recognise the work of the International Criminal Court (ICC). It marks the anniversary of the signing of the Rome Statute in 1998, the treaty that established the ICC as the world's first permanent international criminal court.",
+si:"International justice is essential to deter the worst crimes including genocide and war crimes, and to provide accountability and healing for victims when national courts fail to act."},
+{n:"WORLD HEPATITIS DAY",m:"JULY",d:"28TH JULY",
+de:"World Hepatitis Day is observed on July 28, the birthday of Nobel-prize winning scientist Dr. Baruch Samuel Blumberg, who discovered the hepatitis B virus. It raises awareness about viral hepatitis, which causes liver inflammation and can lead to severe liver disease and liver cancer.",
+si:"Over 300 million people globally live with viral hepatitis, yet most are undiagnosed. This day calls for universal testing, vaccination, and treatment to eliminate hepatitis as a public health threat."},
+{n:"INTERNATIONAL TIGER DAY",m:"JULY",d:"29TH JULY",
+de:"International Tiger Day has been observed annually on July 29 since 2010, when it was established at the Saint Petersburg Tiger Summit. The day raises awareness about the decline of wild tiger populations and promotes habitat conservation and anti-poaching efforts.",
+si:"Over 95% of wild tigers have disappeared in the last 150 years. This day rallies support for conservation efforts that have helped tiger populations slowly recover in countries like India."},
+{n:"INTERNATIONAL YOUTH DAY",m:"AUGUST",d:"12TH AUGUST",
+de:"International Youth Day is observed on August 12 every year since 2000. The day recognises and celebrates the role of young people in creating a better world, and brings youth issues to the attention of the international community.",
+si:"Young people aged 15-24 make up 16% of the global population and are the most powerful force for social change. This day acknowledges their energy, creativity, and potential to solve the world's most pressing problems."},
+{n:"WORLD ORGAN DONATION DAY",m:"AUGUST",d:"13TH AUGUST",
+de:"World Organ Donation Day, observed on August 13, is dedicated to raising awareness about the critical need for organ donors worldwide and honouring the generosity of organ donors and their families. A single donor can save up to 8 lives.",
+si:"Globally, millions of people are waiting for life-saving organ transplants. This day encourages people to register as organ donors and have open conversations with their families about this generous act of giving life."},
+{n:"INDEPENDENCE DAY (INDIA)",m:"AUGUST",d:"15TH AUGUST",
+de:"Independence Day is observed on August 15 every year. On this day in 1947, India gained independence from British colonial rule after nearly 200 years. The day is marked by flag-hoisting ceremonies, cultural programs, and the Prime Minister's address from the Red Fort in New Delhi.",
+si:"Independence Day celebrates India's hard-won freedom achieved through decades of sacrifice, non-violent resistance, and the courage of millions of freedom fighters. It is a day of national pride, unity, and reflection."},
+{n:"NATIONAL SPORTS DAY",m:"AUGUST",d:"29TH AUGUST",
+de:"National Sports Day in India is observed on August 29, the birth anniversary of hockey legend Major Dhyan Chand (1905-1979), widely considered the greatest field hockey player of all time. He led India to three Olympic gold medals in 1928, 1932, and 1936.",
+si:"Sports build physical health, mental resilience, teamwork, and national pride. National Sports Day honours India's sporting legacy and encourages youth to pursue sports as a career and way of life."},
+{n:"TEACHERS' DAY",m:"SEPTEMBER",d:"5TH SEPTEMBER",
+de:"Teachers' Day in India is celebrated on September 5, the birthday of Dr. Sarvepalli Radhakrishnan (1888-1975), philosopher, statesman, and second President of India. When his students wanted to celebrate his birthday, he requested the day be observed as Teachers' Day instead.",
+si:"Teachers shape the minds, values, and futures of every generation. This day expresses deep gratitude to educators who dedicate their lives to nurturing knowledge, curiosity, and character in their students."},
+{n:"PATRIOT DAY",m:"SEPTEMBER",d:"11TH SEPTEMBER",
+de:"Patriot Day in the United States is observed on September 11 in memory of the nearly 3,000 people killed in the terrorist attacks of September 11, 2001. On that day, al-Qaeda terrorists hijacked four commercial airplanes and crashed them into the World Trade Center, the Pentagon, and a field in Pennsylvania.",
+si:"9/11 was a defining moment in modern history that reshaped global security and international relations. Patriot Day is a solemn day of remembrance, resilience, and unity."},
+{n:"INTERNATIONAL DAY OF PEACE",m:"SEPTEMBER",d:"21ST SEPTEMBER",
+de:"The International Day of Peace, established by the United Nations in 1981 and universally celebrated since 2001 on September 21, provides a globally shared date for all of humanity to commit to peace. The UN invites all nations to observe a 24-hour non-violence and ceasefire.",
+si:"In a world marked by conflict, this day reminds us that peace is not merely the absence of war, but the presence of justice, equality, and human dignity. It is both a celebration and a call to action."},
+{n:"WORLD TOURISM DAY",m:"SEPTEMBER",d:"27TH SEPTEMBER",
+de:"World Tourism Day, established by the UNWTO and observed on September 27 since 1980, aims to foster awareness about the importance of tourism and its social, cultural, political, and economic value. The date marks the anniversary of the adoption of the UNWTO's Statutes in 1970.",
+si:"Tourism is one of the world's largest industries, employing 1 in 10 people globally and supporting cultural exchange, environmental conservation, and economic development, especially in developing nations."},
+{n:"WORLD HEART DAY",m:"SEPTEMBER",d:"29TH SEPTEMBER",
+de:"World Heart Day is observed on September 29 every year since 2000. It is the World Heart Federation's flagship initiative and the world's biggest platform for raising awareness about cardiovascular disease, which causes 18.6 million deaths every year.",
+si:"Most cardiovascular diseases are preventable through lifestyle changes. World Heart Day empowers people to reduce their risk through healthy eating, regular exercise, and avoiding tobacco."},
+{n:"WORLD VEGETARIAN DAY",m:"OCTOBER",d:"1ST OCTOBER",
+de:"World Vegetarian Day was established by the North American Vegetarian Society in 1977 and endorsed by the International Vegetarian Union in 1978. Observed on October 1, it promotes the joy and life-enhancing possibilities of vegetarianism and begins Vegetarian Awareness Month.",
+si:"A vegetarian diet has significant benefits for health, animal welfare, and the environment. This day invites people to explore plant-based eating as a positive contribution to their wellbeing and the planet."},
+{n:"MAHATMA GANDHI JAYANTI",m:"OCTOBER",d:"2ND OCTOBER",
+de:"Gandhi Jayanti is a national holiday in India, celebrated on October 2 to mark the birthday of Mohandas Karamchand Gandhi (born 1869), the Father of the Nation. Gandhi led India's independence movement through non-violent civil disobedience (Satyagraha). The UN also observes this day as the International Day of Non-Violence.",
+si:"Gandhi's philosophy of Ahimsa (non-violence) and Satyagraha (truth-force) transformed political struggle. His legacy continues to inspire peace movements and human rights activists across the globe."},
+{n:"WORLD ANIMAL DAY",m:"OCTOBER",d:"4TH OCTOBER",
+de:"World Animal Day is celebrated on October 4, the feast day of Francis of Assisi, the patron saint of animals. The event was first held in 1925 in Germany. The day raises the status of animals in order to improve welfare standards globally.",
+si:"Animal welfare reflects the moral character of society. This day highlights that all living creatures deserve respect and humane treatment and calls for stronger protections against cruelty and extinction."},
+{n:"WORLD TEACHERS' DAY",m:"OCTOBER",d:"5TH OCTOBER",
+de:"World Teachers' Day, held every year on October 5 since 1994, was established by UNESCO. It commemorates the signing of the 1966 UNESCO Recommendation concerning the Status of Teachers. The day celebrates teachers worldwide and focuses on appreciating and improving the educators of the world.",
+si:"Quality education begins with quality teachers. World Teachers' Day advocates for proper training, fair compensation, and the social recognition that teachers deserve globally."},
+{n:"WORLD MENTAL HEALTH DAY",m:"OCTOBER",d:"10TH OCTOBER",
+de:"World Mental Health Day has been observed on October 10 every year since 1992, with the objective of raising awareness of mental health issues around the world and mobilising efforts in support of mental health. It is organised by the World Federation for Mental Health.",
+si:"One in every four people will be affected by a mental health condition at some point in their lives. This day works to combat stigma, improve access to care, and remind the world that mental health is just as important as physical health."},
+{n:"GLOBAL HANDWASHING DAY",m:"OCTOBER",d:"15TH OCTOBER",
+de:"Global Handwashing Day has been observed on October 15 every year since 2008. Established by the Global Handwashing Partnership, it raises awareness about the importance of handwashing with soap as an effective and affordable way to prevent diseases and save lives.",
+si:"Handwashing with soap can reduce diarrhoeal diseases by 25-30% and respiratory infections by 20%, saving over a million lives annually. It is one of the most cost-effective public health interventions in existence."},
+{n:"WORLD FOOD DAY",m:"OCTOBER",d:"16TH OCTOBER",
+de:"World Food Day is observed on October 16, the date in 1945 when the Food and Agriculture Organization (FAO) was founded. It promotes worldwide awareness and action for those who suffer from hunger and for the need to ensure healthy diets for all. Over 150 countries participate.",
+si:"Despite enormous food production capacity, over 800 million people still go hungry. World Food Day advocates for sustainable agriculture, equitable food systems, and the right to food as a basic human right."},
+{n:"INTL DAY FOR THE POVERTY ERADICATION",m:"OCTOBER",d:"17TH OCTOBER",
+de:"The International Day for the Eradication of Poverty, observed on October 17 since 1993, was officially recognised by the UN General Assembly in 1992. It acknowledges the plight of people living in poverty in all countries and calls for engagement and solidarity with those facing extreme deprivation.",
+si:"Extreme poverty is a violation of human rights. This day drives global commitment to ending poverty in all its forms, a central goal of the UN's 2030 Agenda for Sustainable Development."},
+{n:"WORLD POLIO DAY",m:"OCTOBER",d:"24TH OCTOBER",
+de:"World Polio Day was established by Rotary International to commemorate the birthday of Jonas Salk, who led the first team to develop a vaccine against poliomyelitis. It is observed on October 24 and marks the global effort to eradicate polio, one of the greatest public health achievements in history.",
+si:"Polio was once one of the world's most feared diseases. Thanks to global vaccination campaigns, it has been eliminated from all but two countries. This day celebrates that success and drives the final push for eradication."},
+{n:"HALLOWEEN DAY-1",m:"OCTOBER",d:"31ST OCTOBER",
+de:"Halloween is observed on October 31 and has ancient roots in the Celtic festival of Samhain, when people lit bonfires and wore costumes to ward off ghosts. Over centuries it evolved into a cultural celebration featuring costumes, trick-or-treating, carved pumpkins, haunted houses, and all things spooky.",
+si:"Halloween is one of the most commercially successful holidays in the world. It celebrates creativity, community spirit, and the fun of confronting our fears in a safe and playful way."},
+{n:"HALLOWEEN DAY-2",m:"NOVEMBER",d:"1ST NOVEMBER",
+de:"November 1, the day after Halloween, is also associated with Halloween celebrations in many cultures. In the Irish and Scottish tradition, Samhain spans both October 31 and November 1. It is also All Saints' Day in the Christian tradition, a day to honour all saints and martyrs.",
+si:"The convergence of Halloween and All Saints' Day on consecutive dates reflects the rich intermingling of ancient Celtic traditions with Christianity, creating a unique cultural tapestry observed across the world."},
+{n:"ALL SOULS' DAY",m:"NOVEMBER",d:"2ND NOVEMBER",
+de:"All Souls' Day, observed on November 2, is a day of prayer and remembrance for the faithful departed in the Catholic tradition. In many Latin American countries, it is celebrated as Dia de los Muertos (Day of the Dead), a vibrant festival honouring deceased loved ones with colourful altars, food, and music.",
+si:"All Souls' Day reminds us of the beauty of remembrance and the human need to honour those who have passed. It encourages reflection on mortality, the continuity of family, and bonds that transcend death."},
+{n:"WORLD KINDNESS DAY",m:"NOVEMBER",d:"13TH NOVEMBER",
+de:"World Kindness Day was introduced in 1998 by the World Kindness Movement to promote kindness throughout the world. Observed on November 13, it encourages individuals and communities to perform acts of kindness, big or small, to make the world a more compassionate place.",
+si:"Scientific research shows that performing acts of kindness boosts happiness, reduces depression, and strengthens communities. In a world of growing divisions, World Kindness Day is a powerful reminder of our shared humanity."},
+{n:"CHILDREN'S DAY (INDIA)",m:"NOVEMBER",d:"14TH NOVEMBER",
+de:"Children's Day (Bal Diwas) is celebrated in India on November 14, the birthday of Pandit Jawaharlal Nehru, India's first Prime Minister, who had a deep love for children. He believed children were the foundation of a nation's future and called them the most precious resource of the nation.",
+si:"This day celebrates the innocence, joy, and potential of children. It also draws attention to children's rights, highlighting that every child in India deserves love, education, and opportunity."},
+{n:"INTERNATIONAL DAY FOR TOLERANCE",m:"NOVEMBER",d:"16TH NOVEMBER",
+de:"International Day for Tolerance was proclaimed by UNESCO in 1996 and observed on November 16 since then, marking the anniversary of UNESCO's founding in 1945. The day promotes mutual understanding among cultures and peoples and follows the adoption of the Declaration of Principles on Tolerance in 1995.",
+si:"Tolerance is the foundation of peaceful coexistence in a diverse world. This day advocates for education, dialogue, and respect as tools to counter extremism, racism, and xenophobia."},
+{n:"INTERNATIONAL MENS' DAY",m:"NOVEMBER",d:"19TH NOVEMBER",
+de:"International Men's Day is observed on November 19 in over 80 countries. Founded by Dr. Jerome Teelucksingh in Trinidad and Tobago in 1999, the day focuses on men's health, improving gender relations, promoting gender equality, and highlighting positive male role models.",
+si:"Men face unique mental health challenges, with high rates of suicide and reluctance to seek help. International Men's Day opens space for conversations about masculinity, vulnerability, and the importance of men's wellbeing."},
+{n:"UNIVERSAL CHILDREN'S DAY",m:"NOVEMBER",d:"20TH NOVEMBER",
+de:"Universal Children's Day was established by the United Nations on November 20, 1954. It also marks the date in 1989 when the Convention on the Rights of the Child was signed, a landmark treaty ratified by almost every country in the world.",
+si:"Children's rights to education, health, protection, and participation are foundational to human development. This day advocates for every child's right to a safe, joyful, and fulfilling childhood, regardless of where they are born."},
+{n:"WORLD TELEVISION DAY",m:"NOVEMBER",d:"21ST NOVEMBER",
+de:"World Television Day was proclaimed by the United Nations in 1996 to be celebrated on November 21, the date when the first World Television Forum was held at the UN in 1996. It recognises television's growing role in shaping public opinion and focusing world attention on key issues.",
+si:"Television remains one of the most powerful tools for information, education, and cultural exchange, reaching billions of households. This day recognises its potential as a force for social good and democratic discourse."},
+{n:"CONSTITUTION DAY (INDIA)",m:"NOVEMBER",d:"26TH NOVEMBER",
+de:"Constitution Day (Samvidhan Divas) is celebrated in India on November 26 to commemorate the adoption of the Constitution of India by the Constituent Assembly on this day in 1949. The Constitution came into effect on January 26, 1950, now celebrated as Republic Day. This day was officially designated in 2015.",
+si:"The Indian Constitution is the supreme law of the land, guaranteeing fundamental rights and establishing India's democratic institutions. Constitution Day promotes constitutional values and civic awareness among citizens."},
+{n:"WORLD AIDS DAY",m:"DECEMBER",d:"1ST DECEMBER",
+de:"World AIDS Day has been held on December 1 every year since 1988, making it the longest-running international disease awareness day. It is dedicated to raising awareness about the AIDS pandemic caused by the spread of HIV infection and mourning those who have died of the disease.",
+si:"HIV/AIDS has killed over 40 million people and continues to affect 38 million living with HIV globally. World AIDS Day demands universal access to prevention, treatment, and care while fighting the stigma that surrounds it."},
+{n:"INDIAN NAVY DAY",m:"DECEMBER",d:"4TH DECEMBER",
+de:"Indian Navy Day is celebrated every year on December 4 to recognise the achievements and role of the Indian Navy. The date commemorates the Navy's success in Operation Trident during the 1971 India-Pakistan War, when India's missile boats struck Karachi harbour in a decisive naval victory.",
+si:"The Indian Navy is the maritime guardian of over 7,500 km of India's coastline. Navy Day celebrates the courage and professionalism of naval personnel who protect the seas and project India's strength globally."},
+{n:"WILDLIFE CONSERVATION DAY",m:"DECEMBER",d:"4TH DECEMBER",
+de:"Wildlife Conservation Day is observed on December 4. It was established in 2012 to bring global attention to the devastating impacts of wildlife trafficking and the illegal wildlife trade, which is valued at billions of dollars and threatens numerous species with extinction.",
+si:"Wildlife trafficking is the fourth largest criminal trade in the world, threatening iconic species like elephants, rhinos, and tigers. This day mobilises governments, law enforcement, and communities to combat poaching and protect biodiversity."},
+{n:"WORLD SOIL DAY",m:"DECEMBER",d:"5TH DECEMBER",
+de:"World Soil Day, observed on December 5 since 2014, was initiated by the International Union of Soil Sciences. It focuses on the importance of healthy soil and advocates for the sustainable management of soil resources as the foundation of food security.",
+si:"Soil supports 95% of food production but is rapidly being degraded by industrial agriculture, erosion, and pollution. World Soil Day reminds us that healthy soil equals healthy food and a liveable planet."},
+{n:"INTERNATIONAL ANTI-CORRUPTION DAY",m:"DECEMBER",d:"9TH DECEMBER",
+de:"International Anti-Corruption Day has been observed on December 9 each year since 2003, following the adoption of the UN Convention Against Corruption (UNCAC), the only legally binding universal anti-corruption instrument. It raises awareness about corruption and efforts to prevent it.",
+si:"Corruption costs the global economy over $2.6 trillion annually, stealing from public services, undermining democracy, and fuelling inequality and injustice. This day calls on governments, businesses, and citizens to stand united against corruption."},
+{n:"HUMAN RIGHTS DAY",m:"DECEMBER",d:"10TH DECEMBER",
+de:"Human Rights Day is observed every year on December 10, the anniversary of the adoption of the Universal Declaration of Human Rights (UDHR) by the UN General Assembly on December 10, 1948. The UDHR is a milestone document that proclaims the inalienable rights to which every human being is inherently entitled.",
+si:"The UDHR represents the global recognition that all humans are born free and equal in dignity and rights. Human Rights Day reaffirms these principles and advocates for their protection in every corner of the world."},
+{n:"NATIONAL MATHEMATICS DAY",m:"DECEMBER",d:"22ND DECEMBER",
+de:"National Mathematics Day is observed in India on December 22 to mark the birthday of the legendary mathematician Srinivasa Ramanujan (1887-1920). Ramanujan made extraordinary contributions to mathematical analysis, number theory, and infinite series despite having almost no formal training in mathematics.",
+si:"Ramanujan's life is a testament to the power of innate genius and self-belief. National Mathematics Day inspires appreciation for the beauty of mathematics and encourages young minds to explore this fundamental science."},
+{n:"CHRISTMAS EVE",m:"DECEMBER",d:"24TH DECEMBER",
+de:"Christmas Eve, the evening of December 24, is the day before Christmas Day, filled with anticipation, preparation, and celebration. Many people attend midnight church services, exchange gifts, prepare festive meals, and spend quality time with loved ones. It is celebrated by people of many faiths worldwide.",
+si:"Christmas Eve embodies the warmth of anticipation, the magic of tradition, and the deep human need for community, generosity, and light during the darkest time of year in the Northern Hemisphere."},
+{n:"CHRISTMAS",m:"DECEMBER",d:"25TH DECEMBER",
+de:"Christmas is a major Christian holiday celebrated on December 25 to commemorate the birth of Jesus Christ. Over centuries it has become a cultural celebration embracing gift-giving, decorated trees, Santa Claus, carols, family dinners, and acts of charity. It is observed by billions of people worldwide.",
+si:"Christmas is a celebration of generosity, family, hope, and joy. Its universal message of giving, goodwill, and light in the darkness resonates across cultures and makes it one of the world's most widely celebrated days."},
+{n:"NEW YEAR'S EVE",m:"DECEMBER",d:"31ST DECEMBER",
+de:"New Year's Eve is the last day of the year in the Gregorian calendar, a night of celebration, reflection, and anticipation. People gather worldwide to count down to midnight, watch fireworks, and toast to the year ahead. Famous celebrations include Times Square in New York and the Sydney Harbour Bridge.",
+si:"New Year's Eve is a universal human moment of transition - a chance to release the past and welcome the future with hope, gratitude, and excitement. It reminds us that time is precious and every new year is a fresh opportunity."}
+];
+
+var calSvg='<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
+var aM='ALL',sq='';
+
+function render(){
+  var g=document.getElementById('grid'),r=document.getElementById('rc');
+  var f=E.filter(function(e){
+    var mm=aM==='ALL'||e.m===aM;
+    var q=sq.toLowerCase();
+    var ms=!q||e.n.toLowerCase().indexOf(q)>=0||e.d.toLowerCase().indexOf(q)>=0||e.m.toLowerCase().indexOf(q)>=0;
+    return mm&&ms;
+  });
+  r.textContent=f.length+' event'+(f.length!==1?'s':'')+' found';
+  if(!f.length){g.innerHTML='<div class="nores">No events found. Try a different search or filter.</div>';return;}
+  g.innerHTML=f.map(function(e,i){
+    var idx=E.indexOf(e);
+    var delay=Math.min(i,20)*0.035;
+    return '<div class="card" style="animation-delay:'+delay+'s" onclick="openM('+idx+')">'
+      +'<span class="mtag">'+e.m+'</span>'
+      +'<div class="ctitle">'+e.n+'</div>'
+      +'<div class="cdate">'+calSvg+' '+e.d+'</div>'
+      +'<div class="cfooter"><button class="vdbtn" onclick="event.stopPropagation();openM('+idx+')">VIEW DETAILS &#8250;</button></div>'
+      +'</div>';
+  }).join('');
 }
 
-document.getElementById('legacyInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') addLegacy();
+function openM(i){
+  var e=E[i];
+  document.getElementById('mm').textContent=e.m;
+  document.getElementById('mt').textContent=e.n;
+  document.getElementById('md').textContent=e.d;
+  document.getElementById('mde').textContent=e.de;
+  document.getElementById('ms').textContent=e.si;
+  document.getElementById('ov').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeM(){
+  document.getElementById('ov').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+document.getElementById('mc').onclick=closeM;
+document.getElementById('ov').onclick=function(e){if(e.target===this)closeM();};
+document.onkeydown=function(e){if(e.key==='Escape')closeM();};
+
+document.querySelectorAll('.pill').forEach(function(b){
+  b.onclick=function(){
+    document.querySelectorAll('.pill').forEach(function(p){p.classList.remove('active');});
+    b.classList.add('active');
+    aM=b.getAttribute('data-m');
+    render();
+  };
 });
 
-init();
+document.getElementById('si').oninput=function(){sq=this.value;render();};
+document.getElementById('sl').onclick=function(){document.getElementById('ps').scrollBy({left:-200,behavior:'smooth'});};
+document.getElementById('sr').onclick=function(){document.getElementById('ps').scrollBy({left:200,behavior:'smooth'});};
+
+render();
 </script>
 </body>
 </html>
